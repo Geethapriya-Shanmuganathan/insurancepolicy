@@ -1,108 +1,93 @@
-﻿@{
-    Layout = null;
+@{
+    ViewData["Title"] = "Register";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+<style>
+    .full-bg {
+        background: url('/images/bg.png') center/cover no-repeat fixed;
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+    .auth-card {
+        max-width: 520px;
+        width: 100%;
+        background: rgba(255,255,255,0.92);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 1.5rem;
+    }
+    .auth-title { margin-bottom: 1rem; }
+    #registerMessage { min-height: 1.2rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+</style>
 
-<!-- Register Modal -->
-<div class="modal show d-block" id="registerModal" tabindex="-1">
-    <div class="modal-dialog" style="cursor: move;">
-        <div class="modal-content">
-            <form id="registerForm">
-                <div class="modal-header bg-info text-white" style="cursor: move;">
-                    <h5 class="modal-title">Register</h5>
+<div class="full-bg">
+    <div class="auth-card">
+        <h3 class="auth-title">Create your account</h3>
+        <div id="registerMessage" class="text-danger"></div>
+        <form id="registerForm">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input name="username" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required />
+            </div>
+            <div class="two-col">
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required />
                 </div>
-                <div class="modal-body">
-                    <div id="registerMessage" class="text-danger"></div>
-
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input name="username" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Confirm Password</label>
-                        <input type="password" name="confirmPassword" class="form-control" required />
-                    </div>
-                    @* <div class="form-group">
-                        <label>Role</label>
-                        <select name="Role" class="form-control" required>
-                            <option value="">-- Select Role --</option>
-                            <option value="USER">User</option>
-                            <option value="ADMIN">Admin</option>
-                        </select>
-                    </div> *@
-                    <p>Already have an account?<a href="@Url.Action("Login", "AuthView")">Login</a></p>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" class="form-control" required />
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Register</button>
-                </div>
-            </form>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success">Register</button>
+            </div>
+        </form>
+        <div class="mt-3">
+            Already have an account? <a href="@Url.Action("Login", "AuthView")">Login</a>
         </div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function () {
-        // Register form submit
-        $('#registerForm').submit(function (e) {
+    (function(){
+        const form = document.getElementById('registerForm');
+        const msg = document.getElementById('registerMessage');
+        form.addEventListener('submit', async function(e){
             e.preventDefault();
-
-            var data = {
-                username: $("input[name='username']").val(),
-                email: $("input[name='email']").val(),
-                password: $("input[name='password']").val(),
-                confirmPassword: $("input[name='confirmPassword']").val(),
-               // Role: $("select[name='Role']").val()
-
+            msg.textContent = '';
+            const data = {
+                username: form.username.value,
+                email: form.email.value,
+                password: form.password.value,
+                confirmPassword: form.confirmPassword.value
             };
-
-            if (data.password !== data.confirmPassword) {
-                $('#registerMessage').text("Passwords do not match.");
+            if(data.password !== data.confirmPassword){
+                msg.textContent = 'Passwords do not match.';
                 return;
             }
-
-            $.ajax({
-                url: '/api/Auth/register',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (res) {
-                    alert('Registration successful. You can now log in.');
-                    $('#registerModal').modal('hide');
-                    window.location.href = '/Login';
-                },
-                error: function (xhr) {
-                    var errorMsg = "Registration failed.";
-                    if (xhr.responseJSON && xhr.responseJSON.message)
-                        errorMsg = xhr.responseJSON.message;
-                    $('#registerMessage').text(errorMsg);
+            try {
+                const res = await fetch('/api/Auth/register',{
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(data)
+                });
+                if(!res.ok){
+                    const body = await res.json().catch(()=>({}));
+                    throw new Error(body.message || 'Registration failed.');
                 }
-            });
+                window.location.href = '@Url.Action("Login","AuthView")';
+            } catch(err){
+                msg.textContent = err.message;
+            }
         });
-
-        // Show login modal from register
-        $('#showLogin').click(function (e) {
-            e.preventDefault();
-            $.get('/AuthView/Login', function (data) {
-                $('#modalDialog').html(data);
-                $('.modal').modal('hide');
-                $('#loginModal').modal('show');
-            }).fail(function () {
-                alert('Failed to load login form.');
-            });
-        });
-    });
+    })();
 </script>

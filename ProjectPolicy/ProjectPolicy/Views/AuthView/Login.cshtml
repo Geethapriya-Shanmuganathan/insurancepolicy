@@ -1,91 +1,82 @@
-﻿@{
-    ViewBag.Title = "Login";
+@{
+    ViewData["Title"] = "Login";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+<style>
+    .full-bg {
+        background: url('/images/background.jpg') center/cover no-repeat fixed;
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+    .auth-card {
+        max-width: 420px;
+        width: 100%;
+        background: rgba(255,255,255,0.9);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 1.5rem;
+    }
+    .auth-title {
+        margin-bottom: 1rem;
+    }
+    .small-link {
+        font-size: .9rem;
+    }
+    #loginMessage { min-height: 1.2rem; }
+}</style>
 
-<!-- Login Modal -->
-<div class="modal show d-block" tabindex="-1">
-    <div class="modal-dialog" id="modalDialog" style="cursor: move;">
-        <div class="modal-content">
-            <form id="loginForm">
-                <div class="modal-header bg-primary text-white" style="cursor: move;">
-                    <h5 class="modal-title">Login</h5>
-                </div>
-                <div class="modal-body">
-                    <div id="loginMessage" class="text-danger"></div>
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input name="username" class="form-control" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" class="form-control" required />
-                    </div>
-                    <p>Don't have an account? </p>
-                    <a href="@Url.Action("Register", "AuthView")">Go to Register</a>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Login</button>
-                </div>
-            </form>
+<div class="full-bg">
+    <div class="auth-card">
+        <h3 class="auth-title">Login</h3>
+        <div id="loginMessage" class="text-danger"></div>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input name="username" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required />
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+        <div class="mt-3 small-link">
+            Don't have an account? <a href="@Url.Action("Register", "AuthView")">Register</a>
         </div>
     </div>
-</div>
-
-<!-- Register Modal (hidden initially) -->
-<div id="registerModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" id="registerContent"></div>
-    </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-
-        // Login AJAX form submit
-        $('#loginForm').submit(function(e) {
-            e.preventDefault();
-
-            var data = {
-                username: $("input[name='username']").val(),
-                password: $("input[name='password']").val()
-            };
-
-            $.ajax({
-                url: '/api/Auth/login',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(res) {
-                    sessionStorage.setItem('jwt', res.token);
-                    alert('Login successful');
-                    window.location.href = '/'; // Redirect after login
-                },
-                error: function(xhr) {
-                    var errorMsg = "Login failed.";
-                    if (xhr.responseJSON && xhr.responseJSON.message)
-                        errorMsg = xhr.responseJSON.message;
-                    $('#loginMessage').text(errorMsg);
+    <script>
+        (function(){
+            const form = document.getElementById('loginForm');
+            const msg = document.getElementById('loginMessage');
+            form.addEventListener('submit', async function(e){
+                e.preventDefault();
+                msg.textContent = '';
+                const data = {
+                    username: form.username.value,
+                    password: form.password.value
+                };
+                try {
+                    const res = await fetch('/api/Auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    if(!res.ok){
+                        const body = await res.json().catch(()=>({}));
+                        throw new Error(body.message || 'Login failed.');
+                    }
+                    const json = await res.json();
+                    if(json.token){ sessionStorage.setItem('jwt', json.token); }
+                    window.location.href = '/';
+                } catch(err){
+                    msg.textContent = err.message;
                 }
             });
-        });
-
-        // Show register modal on clicking register link
-        $('#showRegister').click(function(e) {
-            e.preventDefault();
-
-            // Load register form partial view via ajax
-            $.get('/AuthView/Register', function(data) {
-                $('#registerContent').html(data);
-                $('.modal').modal('hide');  // Hide any open modal
-                $('#registerModal').modal('show');
-            }).fail(function() {
-                alert('Failed to load registration form.');
-            });
-        });
-    });
-</script>
+        })();
+    </script>
+</div>
