@@ -1,0 +1,111 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace InsurancePolicyMS.Models
+{
+    public class InsuranceDbContext : DbContext
+    {
+        public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Policy> Policies { get; set; }
+        public DbSet<Claim> Claims { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<PremiumCalculation> PremiumCalculations { get; set; }
+        public DbSet<User> Users { get; set; }
+
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Fluent API for ClaimStatus enum (store as string)
+            modelBuilder.Entity<Claim>()
+                .Property(c => c.ClaimStatus)
+                .HasConversion<string>();
+
+            // Fluent API for UserRole enum (store as string)
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion<string>();
+
+            // Optional: Define column types explicitly if needed
+            modelBuilder.Entity<Policy>()
+                .Property(p => p.CoverageAmount)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Policy>()
+                .Property(p => p.PremiumAmount)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Claim>()
+                .Property(c => c.ClaimAmount)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<PremiumCalculation>()
+                .Property(p => p.BasePremium)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<PremiumCalculation>()
+                .Property(p => p.AdjustedPremium)
+                .HasColumnType("decimal(10,2)");
+
+        }
+    }
+}
+// adding authentication and authorisation
+
+//using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore;
+//using Microsoft.EntityFrameworkCore;
+////using PolicyApi.Data; // Assuming ApplicationUser and Policy are here
+
+//namespace InsurancePolicyMS.Models
+//{
+//    public class InsuranceDbContext :
+//    {
+//        public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options)
+//            : base(options)
+//        {
+//        }
+
+//        public DbSet<Policy> Policies { get; set; }
+//        public DbSet<Claim> Claims { get; set; }
+//        public DbSet<Customer> Customers { get; set; }
+//        public DbSet<PremiumCalculation> PremiumCalculations { get; set; }
+//        public DbSet<User> Users { get; set; }
+
+//        protected override void OnModelCreating(ModelBuilder modelBuilder)
+//        {
+//            base.OnModelCreating(modelBuilder); // Important for Identity
+
+//            modelBuilder.Entity<Claim>()
+//                .Property(c => c.ClaimStatus)
+//                .HasConversion<string>();
+
+//            modelBuilder.Entity<User>()
+//                .Property(u => u.Role)
+//                .HasConversion<string>();
+
+//            modelBuilder.Entity<Policy>()
+//                .Property(p => p.CoverageAmount)
+//                .HasColumnType("decimal(10,2)");
+
+//            modelBuilder.Entity<Policy>()
+//                .Property(p => p.PremiumAmount)
+//                .HasColumnType("decimal(10,2)");
+
+//            modelBuilder.Entity<Claim>()
+//                .Property(c => c.ClaimAmount)
+//                .HasColumnType("decimal(10,2)");
+
+//            modelBuilder.Entity<PremiumCalculation>()
+//                .Property(p => p.BasePremium)
+//                .HasColumnType("decimal(10,2)");
+
+//            modelBuilder.Entity<PremiumCalculation>()
+//                .Property(p => p.AdjustedPremium)
+//                .HasColumnType("decimal(10,2)");
+//        }
+//    }
+//}

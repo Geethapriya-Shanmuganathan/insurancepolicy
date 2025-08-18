@@ -1,0 +1,108 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+<!-- Register Modal -->
+<div class="modal show d-block" id="registerModal" tabindex="-1">
+    <div class="modal-dialog" style="cursor: move;">
+        <div class="modal-content">
+            <form id="registerForm">
+                <div class="modal-header bg-info text-white" style="cursor: move;">
+                    <h5 class="modal-title">Register</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="registerMessage" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input name="username" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" name="confirmPassword" class="form-control" required />
+                    </div>
+                    @* <div class="form-group">
+                        <label>Role</label>
+                        <select name="Role" class="form-control" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="USER">User</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                    </div> *@
+                    <p>Already have an account?<a href="@Url.Action("Login", "AuthView")">Login</a></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Register form submit
+        $('#registerForm').submit(function (e) {
+            e.preventDefault();
+
+            var data = {
+                username: $("input[name='username']").val(),
+                email: $("input[name='email']").val(),
+                password: $("input[name='password']").val(),
+                confirmPassword: $("input[name='confirmPassword']").val(),
+               // Role: $("select[name='Role']").val()
+
+            };
+
+            if (data.password !== data.confirmPassword) {
+                $('#registerMessage').text("Passwords do not match.");
+                return;
+            }
+
+            $.ajax({
+                url: '/api/Auth/register',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    alert('Registration successful. You can now log in.');
+                    $('#registerModal').modal('hide');
+                    window.location.href = '/Login';
+                },
+                error: function (xhr) {
+                    var errorMsg = "Registration failed.";
+                    if (xhr.responseJSON && xhr.responseJSON.message)
+                        errorMsg = xhr.responseJSON.message;
+                    $('#registerMessage').text(errorMsg);
+                }
+            });
+        });
+
+        // Show login modal from register
+        $('#showLogin').click(function (e) {
+            e.preventDefault();
+            $.get('/AuthView/Login', function (data) {
+                $('#modalDialog').html(data);
+                $('.modal').modal('hide');
+                $('#loginModal').modal('show');
+            }).fail(function () {
+                alert('Failed to load login form.');
+            });
+        });
+    });
+</script>
