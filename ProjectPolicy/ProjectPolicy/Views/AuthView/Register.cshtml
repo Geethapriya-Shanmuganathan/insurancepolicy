@@ -58,36 +58,36 @@
 </div>
 
 <script>
-    (function(){
-        const form = document.getElementById('registerForm');
-        const msg = document.getElementById('registerMessage');
-        form.addEventListener('submit', async function(e){
+    $(function(){
+        var $form = $('#registerForm');
+        var $msg = $('#registerMessage');
+        $form.on('submit', function(e){
             e.preventDefault();
-            msg.textContent = '';
-            const data = {
-                username: form.username.value,
-                email: form.email.value,
-                password: form.password.value,
-                confirmPassword: form.confirmPassword.value
+            $msg.text('');
+            var data = {
+                username: $form.find('input[name="username"]').val(),
+                email: $form.find('input[name="email"]').val(),
+                password: $form.find('input[name="password"]').val(),
+                confirmPassword: $form.find('input[name="confirmPassword"]').val()
             };
             if(data.password !== data.confirmPassword){
-                msg.textContent = 'Passwords do not match.';
+                $msg.text('Passwords do not match.');
                 return;
             }
-            try {
-                const res = await fetch('/api/Auth/register',{
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify(data)
-                });
-                if(!res.ok){
-                    const body = await res.json().catch(()=>({}));
-                    throw new Error(body.message || 'Registration failed.');
+            $.ajax({
+                url: '/api/Auth/register',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(){
+                    window.location.href = '@Url.Action("Login","AuthView")';
+                },
+                error: function(xhr){
+                    var msg = 'Registration failed.';
+                    if(xhr.responseJSON && xhr.responseJSON.message){ msg = xhr.responseJSON.message; }
+                    $msg.text(msg);
                 }
-                window.location.href = '@Url.Action("Login","AuthView")';
-            } catch(err){
-                msg.textContent = err.message;
-            }
+            });
         });
-    })();
+    });
 </script>

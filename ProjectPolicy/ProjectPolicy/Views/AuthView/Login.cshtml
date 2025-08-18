@@ -50,33 +50,32 @@
         </div>
     </div>
     <script>
-        (function(){
-            const form = document.getElementById('loginForm');
-            const msg = document.getElementById('loginMessage');
-            form.addEventListener('submit', async function(e){
+        $(function(){
+            var $form = $('#loginForm');
+            var $msg = $('#loginMessage');
+            $form.on('submit', function(e){
                 e.preventDefault();
-                msg.textContent = '';
-                const data = {
-                    username: form.username.value,
-                    password: form.password.value
+                $msg.text('');
+                var data = {
+                    username: $form.find('input[name="username"]').val(),
+                    password: $form.find('input[name="password"]').val()
                 };
-                try {
-                    const res = await fetch('/api/Auth/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    if(!res.ok){
-                        const body = await res.json().catch(()=>({}));
-                        throw new Error(body.message || 'Login failed.');
+                $.ajax({
+                    url: '/api/Auth/login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(res){
+                        if(res && res.token){ sessionStorage.setItem('jwt', res.token); }
+                        window.location.href = '/';
+                    },
+                    error: function(xhr){
+                        var msg = 'Login failed.';
+                        if(xhr.responseJSON && xhr.responseJSON.message){ msg = xhr.responseJSON.message; }
+                        $msg.text(msg);
                     }
-                    const json = await res.json();
-                    if(json.token){ sessionStorage.setItem('jwt', json.token); }
-                    window.location.href = '/';
-                } catch(err){
-                    msg.textContent = err.message;
-                }
+                });
             });
-        })();
+        });
     </script>
 </div>
