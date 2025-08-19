@@ -70,7 +70,7 @@ $(function(){
             data: JSON.stringify(data),
             success: function(res){
                 if(res && res.token){ sessionStorage.setItem('jwt', res.token); }
-                window.location.href = '/';
+                window.location.href = '/Dashboard/Index';
             },
             error: function(xhr){
                 var msg = 'Login failed.';
