@@ -7,38 +7,106 @@
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div> *@
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
+
 <style>
-    body {
-        background-image: url('/images/background.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        margin: 0; /* optional: remove default margin */
-        min-height: 100vh; /* ensures full viewport height */
-    }
-
-    .btn-container {
-        margin-top: 20px;
-    }
-
-        .btn-container .btn {
-            margin-right: 10px;
-        }
+    .policies-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    @media (min-width: 992px) { .policies-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .policy-card { border: 1px solid #e5e5e5; border-radius: .5rem; padding: 1rem; background: #fff; transition: all .15s ease-in-out; text-decoration: none; color: inherit; display: block; }
+    .policy-card:hover { border-color: #0d6efd; box-shadow: 0 0 0 .2rem rgba(13,110,253,.15); transform: translateY(-2px); }
+    .achievements { border: 1px solid #e5e5e5; border-radius: .5rem; background: #fff; }
+    .hero { background: url('/images/background.jpg') center/cover no-repeat; border-radius: .5rem; padding: 2rem; color: #fff; margin-bottom: 1rem; }
+    .section-title { margin: .5rem 0 1rem; }
+    .list-check li::marker { color: #198754; }
+    .right-sticky { position: sticky; top: 1rem; }
+    .card-title { font-weight: 600; }
+    .clickable { cursor: pointer; }
+    .muted { color: #6c757d; }
+    .min-h-section { min-height: 320px; }
+    .box-icon { width: 40px; height: 40px; border-radius: .5rem; background: #f1f5ff; display: inline-flex; align-items: center; justify-content: center; margin-right: .5rem; }
+    .box-icon i { color: #0d6efd; }
+    .policy-desc { font-size: .9rem; }
+    .ach-list li { margin-bottom: .5rem; }
+    .ach-list .badge { vertical-align: middle; }
+    .small-muted { font-size: .85rem; color: #6c757d; }
 </style>
 
-<div>
-    <h1 style=" color: aliceblue;">Welcome to Insurance Policy Management System</h1>
-
-    <div class="btn-container">
-        <a class="btn btn-primary" href="@Url.Action("Login", "AuthView")">Login</a>
-        <a class="btn btn-success" href="@Url.Action("Register", "AuthView")">Register</a>
+<div class="container">
+    <div class="hero">
+        <h2 class="mb-2">Welcome to Insurance Policy Management System</h2>
+        <div class="small-muted">Choose a policy to view details or get a quote instantly.</div>
     </div>
 
-    <!-- Your home page content -->
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <h4 class="section-title">Explore Policies</h4>
+            <div class="policies-grid min-h-section">
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Health" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-heart-pulse"></i></span>
+                        <span class="card-title">Health Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Comprehensive medical coverage for you and your family.</div>
+                </a>
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Life" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-shield-check"></i></span>
+                        <span class="card-title">Life Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Secure your family's future with flexible plans.</div>
+                </a>
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Auto" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-car-front"></i></span>
+                        <span class="card-title">Auto Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Protect your vehicle against accidents and theft.</div>
+                </a>
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Home" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-house-door"></i></span>
+                        <span class="card-title">Home Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Coverage for your home and belongings.</div>
+                </a>
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Travel" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-airplane"></i></span>
+                        <span class="card-title">Travel Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Stay protected during your domestic and international trips.</div>
+                </a>
+                <a class="policy-card" href="@Url.Action("PolicyDetails", "Home", new { policyType = "Business" })">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="box-icon"><i class="bi bi-briefcase"></i></span>
+                        <span class="card-title">Business Insurance</span>
+                    </div>
+                    <div class="policy-desc muted">Safeguard your business assets and operations.</div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="right-sticky achievements p-3">
+                <h5 class="mb-3">Our Achievements</h5>
+                <ul class="list-unstyled ach-list">
+                    <li><span class="badge bg-success me-2">New</span> 1M+ policies issued</li>
+                    <li><span class="badge bg-primary me-2">Top</span> 98% claim settlement ratio</li>
+                    <li><span class="badge bg-warning text-dark me-2">Award</span> Best Insurer 2024</li>
+                    <li><span class="badge bg-info text-dark me-2">CSAT</span> 4.8/5 customer satisfaction</li>
+                </ul>
+                <div class="small-muted mt-2">Trusted by millions across the country.</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Include Bootstrap CSS if not already included for button styles -->
-@* Bootstrap is already included via the shared layout *@
+@section Scripts {
+    <script>
+        // Optional: highlight via JS (CSS hover already applied)
+        $(function(){
+            $('.policy-card').on('focus', function(){ $(this).addClass('shadow'); })
+                              .on('blur', function(){ $(this).removeClass('shadow'); });
+        });
+    </script>
+}
