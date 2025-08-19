@@ -135,6 +135,15 @@ using (var scope = app.Services.CreateScope())
     try
     {
         db.Database.Migrate();
+        // Seed default admin if not exists
+        if (!await db.Users.AnyAsync(u => u.Username == "admin"))
+        {
+            var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<User>();
+            var admin = new User { Username = "admin", Role = UserRole.ADMIN };
+            admin.Password = hasher.HashPassword(admin, "Admin@123");
+            db.Users.Add(admin);
+            await db.SaveChangesAsync();
+        }
     }
     catch (Exception ex)
     {
