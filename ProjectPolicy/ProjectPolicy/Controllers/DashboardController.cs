@@ -25,7 +25,8 @@ namespace InsurancePolicyMS.Controllers
             var purchased = new List<Policy>();
             var suggested = allPolicies;
 
-            ViewBag.HideAuthLinks = true; // hide Login/Register in header
+            ViewBag.HideAuthLinks = true; // for shared layout, though dashboard uses its own
+            ViewBag.Username = username;   // for dashboard layout header
 
             var vm = new DashboardViewModel
             {
