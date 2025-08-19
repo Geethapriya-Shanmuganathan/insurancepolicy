@@ -1,9 +1,60 @@
+@model InsurancePolicyMS.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
+    ViewBag.HideAuthLinks = true;
 }
 
-<div class="container py-5">
-    <h2>Welcome to your Dashboard</h2>
-    <p class="text-muted">We'll design this page next.</p>
+<style>
+  .policy-card { border: 1px solid #e5e5e5; border-radius: .5rem; padding: 1rem; background: #fff; transition: all .15s ease-in-out; text-decoration: none; color: inherit; display: block; }
+  .policy-card:hover { border-color: #0d6efd; box-shadow: 0 0 0 .2rem rgba(13,110,253,.15); transform: translateY(-2px); }
+  .policies-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1rem; }
+  @media (min-width: 768px) { .policies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1200px) { .policies-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Welcome, @Model.Username</h3>
+    <div class="text-muted small">Insurance Policy Management System | support@insurancems.example | +91 98765 43210</div>
+  </div>
+
+  @if (Model.HasPurchased)
+  {
+    <h5>Your policies</h5>
+    <div class="policies-grid mb-4">
+      @foreach (var p in Model.PurchasedPolicies)
+      {
+        <a class="policy-card" href="@Url.Action("PolicyDetails","Home", new { policyType = p.PolicyType })">
+          <div class="fw-semibold">@p.PolicyType</div>
+          <div class="text-muted small">Coverage: @p.CoverageAmount.ToString("C") | Premium: @p.PremiumAmount.ToString("C")</div>
+        </a>
+      }
+    </div>
+
+    <h5>Policies you may find helpful</h5>
+    <div class="policies-grid">
+      @foreach (var p in Model.SuggestedPolicies)
+      {
+        <a class="policy-card" href="@Url.Action("PolicyDetails","Home", new { policyType = p.PolicyType })">
+          <div class="fw-semibold">@p.PolicyType</div>
+          <div class="text-muted small">Coverage: @p.CoverageAmount.ToString("C") | Premium: @p.PremiumAmount.ToString("C")</div>
+        </a>
+      }
+    </div>
+  }
+  else
+  {
+    <div class="alert alert-info">You have not purchased any policies yet. Explore available policies below.</div>
+    <h5>Explore policies</h5>
+    <div class="policies-grid">
+      @foreach (var p in Model.SuggestedPolicies)
+      {
+        <a class="policy-card" href="@Url.Action("PolicyDetails","Home", new { policyType = p.PolicyType })">
+          <div class="fw-semibold">@p.PolicyType</div>
+          <div class="text-muted small">Coverage: @p.CoverageAmount.ToString("C") | Premium: @p.PremiumAmount.ToString("C")</div>
+        </a>
+      }
+    </div>
+  }
 </div>
 
