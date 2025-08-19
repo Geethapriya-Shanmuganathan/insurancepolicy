@@ -49,33 +49,35 @@
             Don't have an account? <a href="@Url.Action("Register", "AuthView")">Register</a>
         </div>
     </div>
-    <script>
-        $(function(){
-            var $form = $('#loginForm');
-            var $msg = $('#loginMessage');
-            $form.on('submit', function(e){
-                e.preventDefault();
-                $msg.text('');
-                var data = {
-                    username: $form.find('input[name="username"]').val(),
-                    password: $form.find('input[name="password"]').val()
-                };
-                $.ajax({
-                    url: '/api/Auth/login',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    success: function(res){
-                        if(res && res.token){ sessionStorage.setItem('jwt', res.token); }
-                        window.location.href = '/';
-                    },
-                    error: function(xhr){
-                        var msg = 'Login failed.';
-                        if(xhr.responseJSON && xhr.responseJSON.message){ msg = xhr.responseJSON.message; }
-                        $msg.text(msg);
-                    }
+    @section Scripts {
+        <script>
+            $(function(){
+                var $form = $('#loginForm');
+                var $msg = $('#loginMessage');
+                $form.on('submit', function(e){
+                    e.preventDefault();
+                    $msg.text('');
+                    var data = {
+                        username: $form.find('input[name="username"]').val(),
+                        password: $form.find('input[name="password"]').val()
+                    };
+                    $.ajax({
+                        url: '/api/Auth/login',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function(res){
+                            if(res && res.token){ sessionStorage.setItem('jwt', res.token); }
+                            window.location.href = '/';
+                        },
+                        error: function(xhr){
+                            var msg = 'Login failed.';
+                            if(xhr.responseJSON && xhr.responseJSON.message){ msg = xhr.responseJSON.message; }
+                            $msg.text(msg);
+                        }
+                    });
                 });
             });
-        });
-    </script>
+        </script>
+    }
 </div>
