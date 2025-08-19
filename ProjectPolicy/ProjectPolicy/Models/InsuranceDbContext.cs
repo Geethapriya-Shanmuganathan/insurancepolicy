@@ -50,6 +50,7 @@ namespace InsurancePolicyMS.Models
                 .Property(p => p.AdjustedPremium)
                 .HasColumnType("decimal(10,2)");
 
+            // Relationships for UserPolicy join table
             modelBuilder.Entity<UserPolicy>()
                 .HasOne(up => up.User)
                 .WithMany()
