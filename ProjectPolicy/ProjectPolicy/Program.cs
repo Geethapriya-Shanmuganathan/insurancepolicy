@@ -38,9 +38,8 @@ using InsurancePolicyMS.Models;
 using InsurancePolicyMS.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,9 +69,18 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
-builder.Services.AddDbContext<InsuranceDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("constring")));
+builder.Services.AddDbContext<InsuranceDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("constring"),
+        sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
+    )
+);
 
 builder.Services.AddScoped<IPolicyService, PolicyService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
@@ -81,11 +89,8 @@ builder.Services.AddScoped<IPremiumCalculationService, PremiumCalculationService
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    });
+// Session is used in AuthViewController
+builder.Services.AddSession();
 
 // Configure the HTTP request pipeline.
 builder.Services.AddEndpointsApiExplorer(); // Required for Swagger
@@ -117,9 +122,35 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Ensure database is created and migrations are applied at startup (dev convenience)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<InsuranceDbContext>();
+    try
+    {
+        db.Database.Migrate();
+        // Seed default admin if not exists
+        if (!await db.Users.AnyAsync(u => u.Username == "admin"))
+        {
+            var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<User>();
+            var admin = new User { Username = "admin", Role = UserRole.ADMIN };
+            admin.Password = hasher.HashPassword(admin, "Admin@123");
+            db.Users.Add(admin);
+            await db.SaveChangesAsync();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+        logger.LogError(ex, "Failed to apply EF Core migrations.");
+    }
+}
 
 app.Run();
 

@@ -1,4 +1,4 @@
-﻿using InsurancePolicyMS.Models;
+using InsurancePolicyMS.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,11 +46,12 @@ namespace InsurancePolicyMS.Services
 
         private string GenerateJwtToken(User user)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new System.Security.Claims.Claim("userId", user.UserId.ToString()),
-                new System.Security.Claims.Claim("username", user.Username),
-                new System.Security.Claims.Claim("userType", user.Role.ToString()) // 👈 Custom claim
+                new Claim("userId", user.UserId.ToString()),
+                new Claim("username", user.Username),
+                new Claim("userType", user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

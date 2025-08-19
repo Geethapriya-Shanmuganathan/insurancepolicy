@@ -1,9 +1,13 @@
+@{
+    var title = ViewData["Title"] as string ?? "Dashboard";
+    var username = ViewBag.Username as string ?? "Guest";
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - InsurancePolicyMS</title>
+    <title>@title - InsurancePolicyMS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InsurancePolicyMS.styles.css" asp-append-version="true" />
@@ -14,34 +18,31 @@
         <div class="border-bottom">
             <div class="container py-2">
                 <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <a asp-controller="Home" asp-action="Index" class="d-flex align-items-center text-decoration-none">
-                            <img src="~/favicon.ico" alt="Logo" style="width:36px;height:36px;" class="me-2" />
-                            <div>
-                                <div class="fw-bold">Insurance Policy Management System</div>
-                                <div class="small text-muted">123 Insurance Ave, YourCity</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="d-none d-md-block"></div>
-                    @if (ViewBag.HideAuthLinks != true)
-                    {
-                        <div class="d-flex align-items-center gap-2">
-                            <a class="btn btn-outline-primary btn-sm" asp-controller="AuthView" asp-action="Login">Login</a>
-                            <a class="btn btn-primary btn-sm" asp-controller="AuthView" asp-action="Register">Register</a>
+                    <a asp-controller="Home" asp-action="Index" class="d-flex align-items-center text-decoration-none">
+                        <img src="~/favicon.ico" alt="Logo" style="width:36px;height:36px;" class="me-2" />
+                        <div>
+                            <div class="fw-bold">Insurance Policy Management System</div>
+                            <div class="small text-muted">support@insurancems.example | +91 98765 43210</div>
                         </div>
-                    }
+                    </a>
+                    <div class="text-end" title="@username">
+                        <span class="small text-muted me-2">Signed in as</span>
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border" style="width:36px;height:36px;">
+                            <i class="bi bi-person" style="font-size: 1.25rem;"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashNav" aria-controls="dashNav"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div id="mainNav" class="navbar-collapse collapse">
+                <div id="dashNav" class="navbar-collapse collapse">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="PolicyDetails">Policy Details</a></li>
@@ -50,6 +51,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -70,3 +72,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

@@ -23,6 +23,17 @@ namespace InsurancePolicyMS.Controllers
             return View();
         }
 
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        public IActionResult PolicyDetails(string policyType)
+        {
+            ViewData["PolicyType"] = policyType ?? "Policy";
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

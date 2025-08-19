@@ -1,4 +1,4 @@
-﻿using InsurancePolicyMS.DTOs;
+using InsurancePolicyMS.DTOs;
 using InsurancePolicyMS.Models;
 using InsurancePolicyMS.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ namespace InsurancePolicyMS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CustomerController : Controller
+    public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
 

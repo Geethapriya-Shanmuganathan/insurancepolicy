@@ -1,4 +1,4 @@
-﻿using InsurancePolicyMS.DTOs;
+using InsurancePolicyMS.DTOs;
 using InsurancePolicyMS.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@ namespace InsurancePolicyMS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PremiumCalculationController : Controller
+    public class PremiumCalculationController : ControllerBase
     {
         private readonly IPremiumCalculationService _premiumService;
 

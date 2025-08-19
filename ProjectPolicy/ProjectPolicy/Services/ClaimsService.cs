@@ -1,6 +1,7 @@
-﻿using InsurancePolicyMS.DTOs;
+using InsurancePolicyMS.DTOs;
 using InsurancePolicyMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace InsurancePolicyMS.Services
 {
