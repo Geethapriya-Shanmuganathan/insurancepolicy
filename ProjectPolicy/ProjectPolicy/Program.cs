@@ -75,7 +75,12 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-builder.Services.AddDbContext<InsuranceDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("constring")));
+builder.Services.AddDbContext<InsuranceDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("constring"),
+        sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
+    )
+);
 
 builder.Services.AddScoped<IPolicyService, PolicyService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
@@ -122,6 +127,21 @@ app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Ensure database is created and migrations are applied at startup (dev convenience)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<InsuranceDbContext>();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+        logger.LogError(ex, "Failed to apply EF Core migrations.");
+    }
+}
 
 app.Run();
 
