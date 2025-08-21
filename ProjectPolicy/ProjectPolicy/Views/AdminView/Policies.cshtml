@@ -1,0 +1,169 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Admin - Policies";
+}
+<style>
+  .clickable { cursor: pointer; }
+</style>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Policies</h4>
+    <button id="btnNew" class="btn btn-primary">New Policy</button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered align-middle" id="tblPolicies">
+      <thead class="table-light">
+        <tr>
+          <th>Id</th>
+          <th>Type</th>
+          <th>Coverage</th>
+          <th>Premium</th>
+          <th>Valid From</th>
+          <th>Valid To</th>
+          <th style="width:160px">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="policyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="policyForm">
+      <div class="modal-header">
+        <h5 class="modal-title">Policy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body g-3 row">
+        <input type="hidden" id="policyId" />
+        <div class="col-12">
+          <label class="form-label">Policy Type</label>
+          <input class="form-control" id="policyType" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Coverage Amount</label>
+          <input type="number" step="0.01" class="form-control" id="coverageAmount" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Premium Amount</label>
+          <input type="number" step="0.01" class="form-control" id="premiumAmount" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Validity Start</label>
+          <input type="date" class="form-control" id="validityStartDate" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Validity End</label>
+          <input type="date" class="form-control" id="validityEndDate" required />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+(function(){
+  const apiBase = '/api/Admin';
+  const token = sessionStorage.getItem('jwt');
+  const $tblBody = $('#tblPolicies tbody');
+  const modalEl = document.getElementById('policyModal');
+  const bsModal = new bootstrap.Modal(modalEl);
+
+  function authAjax(opts){
+    opts = opts || {};
+    opts.headers = opts.headers || {};
+    if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+    return $.ajax(opts);
+  }
+
+  function loadPolicies(){
+    authAjax({ url: apiBase + '/policies', method: 'GET' })
+      .done(renderPolicies)
+      .fail(err => alert('Failed to load policies'));
+  }
+
+  function renderPolicies(list){
+    $tblBody.empty();
+    list.forEach(p => {
+      const tr = $('<tr/>');
+      tr.append(`<td>${p.policyId}</td>`);
+      tr.append(`<td>${escapeHtml(p.policyType)}</td>`);
+      tr.append(`<td>${Number(p.coverageAmount).toLocaleString()}</td>`);
+      tr.append(`<td>${Number(p.premiumAmount).toLocaleString()}</td>`);
+      tr.append(`<td>${p.validityStartDate?.substring(0,10) || ''}</td>`);
+      tr.append(`<td>${p.validityEndDate?.substring(0,10) || ''}</td>`);
+      tr.append(`<td>
+        <button class="btn btn-sm btn-outline-primary me-1" data-action="edit" data-id="${p.policyId}">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${p.policyId}">Delete</button>
+      </td>`);
+      $tblBody.append(tr);
+    });
+  }
+
+  function openModal(policy){
+    $('#policyId').val(policy?.policyId || '');
+    $('#policyType').val(policy?.policyType || '');
+    $('#coverageAmount').val(policy?.coverageAmount || '');
+    $('#premiumAmount').val(policy?.premiumAmount || '');
+    $('#validityStartDate').val(policy?.validityStartDate?.substring(0,10) || '');
+    $('#validityEndDate').val(policy?.validityEndDate?.substring(0,10) || '');
+    bsModal.show();
+  }
+
+  function findPolicyById(id){
+    return authAjax({ url: apiBase + '/policies', method:'GET' })
+      .then(list => list.find(x => x.policyId == id));
+  }
+
+  $('#btnNew').on('click', () => openModal(null));
+
+  $tblBody.on('click', 'button', async function(){
+    const action = $(this).data('action');
+    const id = $(this).data('id');
+    if (action === 'edit'){
+      const p = await findPolicyById(id);
+      if (!p) return alert('Not found');
+      openModal(p);
+    } else if (action === 'del'){
+      if (!confirm('Delete this policy?')) return;
+      authAjax({ url: `${apiBase}/policies/${id}`, method: 'DELETE' })
+        .done(loadPolicies)
+        .fail(() => alert('Delete failed'));
+    }
+  });
+
+  $('#policyForm').on('submit', function(e){
+    e.preventDefault();
+    const payload = {
+      policyType: $('#policyType').val(),
+      coverageAmount: parseFloat($('#coverageAmount').val()),
+      premiumAmount: parseFloat($('#premiumAmount').val()),
+      validityStartDate: $('#validityStartDate').val(),
+      validityEndDate: $('#validityEndDate').val()
+    };
+    const id = $('#policyId').val();
+    if (id) {
+      authAjax({ url: `${apiBase}/policies/${id}`, method:'PUT', contentType:'application/json', data: JSON.stringify(payload) })
+        .done(() => { bsModal.hide(); loadPolicies(); })
+        .fail(()=> alert('Update failed'));
+    } else {
+      authAjax({ url: `${apiBase}/policies`, method:'POST', contentType:'application/json', data: JSON.stringify(payload) })
+        .done(() => { bsModal.hide(); loadPolicies(); })
+        .fail(()=> alert('Create failed'));
+    }
+  });
+
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  loadPolicies();
+})();
+</script>
+}

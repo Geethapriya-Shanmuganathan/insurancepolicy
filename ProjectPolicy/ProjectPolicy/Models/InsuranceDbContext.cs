@@ -15,21 +15,22 @@ namespace InsurancePolicyMS.Models
         public DbSet<PremiumCalculation> PremiumCalculations { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public DbSet<UserPolicy> UserPolicies { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Fluent API for ClaimStatus enum (store as string)
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Claim>()
                 .Property(c => c.ClaimStatus)
                 .HasConversion<string>();
 
-            // Fluent API for UserRole enum (store as string)
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasConversion<string>();
 
-            // Optional: Define column types explicitly if needed
             modelBuilder.Entity<Policy>()
                 .Property(p => p.CoverageAmount)
                 .HasColumnType("decimal(10,2)");
@@ -50,6 +51,17 @@ namespace InsurancePolicyMS.Models
                 .Property(p => p.AdjustedPremium)
                 .HasColumnType("decimal(10,2)");
 
+            modelBuilder.Entity<UserPolicy>()
+                .HasOne(up => up.User)
+                .WithMany()
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserPolicy>()
+                .HasOne(up => up.Policy)
+                .WithMany()
+                .HasForeignKey(up => up.PolicyId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

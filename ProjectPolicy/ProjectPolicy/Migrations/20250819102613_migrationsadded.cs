@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InsurancePolicyMS.Migrations
 {
     /// <inheritdoc />
-    public partial class addedlogin : Migration
+    public partial class migrationsadded : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

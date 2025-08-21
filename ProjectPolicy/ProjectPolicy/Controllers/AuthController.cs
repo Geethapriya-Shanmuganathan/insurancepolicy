@@ -23,7 +23,8 @@ namespace InsurancePolicyMS.Controllers
             var user = new User
             {
                 Username = dto.Username,
-                Role = dto.Role
+                //Role = dto.Role
+                Role = InsurancePolicyMS.Models.UserRole.USER
             };
 
             try

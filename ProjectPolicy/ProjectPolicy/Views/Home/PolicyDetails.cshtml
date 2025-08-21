@@ -1,0 +1,33 @@
+﻿@{
+    var policyType = (string?)ViewData["PolicyType"] ?? "Policy";
+    ViewData["Title"] = policyType + " Details";
+}
+
+<div class="container">
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">@policyType Insurance</h3>
+                    <p class="text-muted">Here are the details for @policyType insurance. Customize this section to pull dynamic data from your database.</p>
+                    <ul>
+                        <li>Coverage details</li>
+                        <li>Premium options</li>
+                        <li>Eligibility criteria</li>
+                        <li>Claim process</li>
+                    </ul>
+                    <a class="btn btn-primary" asp-controller="AuthView" asp-action="Login">Get Quote / Buy</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Need help?</h5>
+                    <p class="text-muted">Contact our support team for tailored recommendations.</p>
+                    <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Contact">Contact us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -23,7 +23,7 @@ namespace InsurancePolicyMS.Models
 
     public enum UserRole
     {
-        ADMIN,
-        USER
+        ADMIN=0,
+        USER=1,
     }
 }

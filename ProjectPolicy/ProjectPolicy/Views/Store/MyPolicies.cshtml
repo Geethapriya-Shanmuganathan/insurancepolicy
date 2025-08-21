@@ -1,0 +1,38 @@
+﻿@model IEnumerable<InsurancePolicyMS.Models.UserPolicy>
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "My Policies";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">My Policies</h4>
+        <a class="btn btn-outline-primary" asp-controller="Store" asp-action="Explore">Explore More</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You don't have any policies yet. <a asp-controller="Store" asp-action="Explore">Explore policies</a>.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle">
+                <thead class="table-light">
+                    <tr><th>Type</th><th>Coverage</th><th>Premium</th><th>Purchased</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var up in Model)
+                    {
+                        <tr>
+                            <td>@up.Policy.PolicyType</td>
+                            <td>@up.Policy.CoverageAmount.ToString("N0")</td>
+                            <td>@up.Policy.PremiumAmount.ToString("N0")</td>
+                            <td>@up.PurchaseDate.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

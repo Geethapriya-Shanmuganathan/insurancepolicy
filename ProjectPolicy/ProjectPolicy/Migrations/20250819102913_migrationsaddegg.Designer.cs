@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsurancePolicyMS.Migrations
 {
     [DbContext(typeof(InsuranceDbContext))]
-    [Migration("20250818082146_addedlogin")]
-    partial class addedlogin
+    [Migration("20250819102913_migrationsaddegg")]
+    partial class migrationsaddegg
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

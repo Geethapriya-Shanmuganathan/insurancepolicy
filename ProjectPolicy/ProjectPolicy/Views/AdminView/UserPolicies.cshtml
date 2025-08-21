@@ -1,0 +1,102 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Admin - User Policies";
+}
+<div class="container py-4">
+    <h4 class="mb-3">User Policies</h4>
+
+    <div class="row g-2 mb-3">
+        <div class="col-auto">
+            <label class="form-label">User Id</label>
+            <input type="number" class="form-control" id="userId" placeholder="Enter user id" />
+        </div>
+        <div class="col-auto align-self-end">
+            <button class="btn btn-primary" id="btnLoad">Load</button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h6>Assigned Policies</h6>
+            <ul class="list-group" id="assignedList"></ul>
+        </div>
+        <div class="col-lg-6">
+            <h6>Available Policies</h6>
+            <ul class="list-group" id="availableList"></ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+          const apiBase = '/api/Admin';
+          const token = sessionStorage.getItem('jwt');
+          function authAjax(opts){
+            opts = opts || {};
+            opts.headers = opts.headers || {};
+            if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+            return $.ajax(opts);
+          }
+
+          function loadUserPolicies(userId){
+            return authAjax({ url: `${apiBase}/user/${userId}/policies`, method:'GET' });
+          }
+          function loadAllPolicies(){
+            return authAjax({ url: `${apiBase}/policies`, method:'GET' });
+          }
+
+          function renderLists(userId, assigned, all){
+            const assignedIds = new Set(assigned.map(x => x.policyId));
+            const $assigned = $('#assignedList').empty();
+            const $available = $('#availableList').empty();
+
+            assigned.forEach(up => {
+              const li = $(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>${up.policy.policyType}</span>
+                <button class="btn btn-sm btn-outline-danger" data-remove="${up.policyId}">Remove</button>
+              </li>`);
+              $assigned.append(li);
+            });
+
+            all.filter(p => !assignedIds.has(p.policyId)).forEach(p => {
+              const li = $(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>${p.policyType}</span>
+                <button class="btn btn-sm btn-outline-primary" data-assign="${p.policyId}">Assign</button>
+              </li>`);
+              $available.append(li);
+            });
+
+            $assigned.off('click').on('click','button', function(){
+              const pid = $(this).data('remove');
+              authAjax({ url: `${apiBase}/user/${userId}/policies/${pid}`, method:'DELETE' })
+                .done(()=> refresh(userId))
+                .fail(()=> alert('Remove failed'));
+            });
+
+            $available.off('click').on('click','button', function(){
+              const pid = $(this).data('assign');
+              authAjax({ url: `${apiBase}/user/${userId}/policies/${pid}`, method:'POST' })
+                .done(()=> refresh(userId))
+                .fail(xhr=> alert(xhr.responseText || 'Assign failed'));
+            });
+          }
+
+          function refresh(userId){
+            $.when(loadUserPolicies(userId), loadAllPolicies())
+              .done((a,b)=> {
+                const assigned = a[0] || [];
+                const all = b[0] || [];
+                renderLists(userId, assigned, all);
+              })
+              .fail(()=> alert('Failed to load data'));
+          }
+
+          $('#btnLoad').on('click', function(){
+            const userId = parseInt($('#userId').val());
+            if (!userId) return alert('Enter valid user id');
+            refresh(userId);
+          });
+        })();
+    </script>
+}

@@ -310,3 +310,4 @@ C:\Users\2421078\Desktop\ProjectPolicy 1\ProjectPolicy\ProjectPolicy\obj\Debug\n
 C:\Users\2421078\Desktop\ProjectPolicy 1\ProjectPolicy\ProjectPolicy\obj\Debug\net8.0\InsurancePolicyMS.pdb
 C:\Users\2421078\Desktop\ProjectPolicy 1\ProjectPolicy\ProjectPolicy\obj\Debug\net8.0\InsurancePolicyMS.genruntimeconfig.cache
 C:\Users\2421078\Desktop\ProjectPolicy 1\ProjectPolicy\ProjectPolicy\obj\Debug\net8.0\ref\InsurancePolicyMS.dll
+C:\Users\2421078\Desktop\ProjectPolicy 1\ProjectPolicy\ProjectPolicy\obj\Debug\net8.0\InsurancePolicyMS.sourcelink.json

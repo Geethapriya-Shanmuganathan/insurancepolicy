@@ -1,0 +1,59 @@
+﻿@model IEnumerable<InsurancePolicyMS.Models.Policy>
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Premium Calculator";
+}
+
+<div class="container py-4">
+    <h4 class="mb-3">Premium Calculator</h4>
+    <form method="post" asp-controller="UserPremium" asp-action="Calculate">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Select Policy</label>
+                <select id="policySelect" name="policyId" class="form-select">
+                    @foreach (var p in Model)
+                    {
+                        <option value="@p.PolicyId">@p.PolicyType</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button id="btnCalc" type="submit" class="btn btn-primary">Calculate</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3 mt-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Result</h6>
+                    <div>Base Premium: <span id="basePremium">-</span></div>
+                    <div>Adjusted Premium: <span id="adjustedPremium">-</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+          $('#btnCalc').on('click', function(e){
+            e.preventDefault();
+            var pid = $('#policySelect').val();
+            $.ajax({
+              url: '@Url.Action("Calculate", "UserPremium")',
+              method: 'POST',
+              data: { policyId: pid, __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val() },
+              success: function(res){
+                $('#basePremium').text(res.basePremium);
+                $('#adjustedPremium').text(res.adjustedPremium);
+              },
+              error: function(){ alert('Failed to calculate'); }
+            });
+          });
+        })();
+    </script>
+}

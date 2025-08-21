@@ -1,0 +1,13 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Admin";
+}
+<div class="container py-4">
+    <h3 class="mb-3">Admin Console</h3>
+    <div class="list-group">
+        <a class="list-group-item list-group-item-action" href="@Url.Action("Policies", "AdminView")">Manage Policies</a>
+        <a class="list-group-item list-group-item-action" href="@Url.Action("Claims", "AdminView")">Process Claims</a>
+        <a class="list-group-item list-group-item-action" href="@Url.Action("UserPolicies", "AdminView")">Manage User Policies</a>
+        <a class="list-group-item list-group-item-action" href="@Url.Action("Reports", "AdminView")">Reports</a>
+    </div>
+</div>

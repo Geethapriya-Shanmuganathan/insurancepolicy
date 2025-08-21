@@ -17,9 +17,14 @@ namespace InsurancePolicyMS.Controllers
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        public IActionResult Contact()
         {
+            return View();
+        }
+
+        public IActionResult PolicyDetails(string policyType)
+        {
+            ViewData["PolicyType"] = policyType ?? "Policy";
             return View();
         }
 

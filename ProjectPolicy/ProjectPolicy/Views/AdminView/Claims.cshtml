@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Admin - Claims";
+}
+<div class="container py-4">
+    <h4 class="mb-3">Claims</h4>
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle" id="tblClaims">
+            <thead class="table-light">
+                <tr>
+                    <th>Id</th>
+                    <th>Policy</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Settlement</th>
+                    <th style="width:220px">Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+          const apiBase = '/api/Admin';
+          const token = sessionStorage.getItem('jwt');
+          const $body = $('#tblClaims tbody');
+
+          function authAjax(opts){
+            opts = opts || {};
+            opts.headers = opts.headers || {};
+            if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+            return $.ajax(opts);
+          }
+
+          function loadClaims(){
+            authAjax({ url: apiBase + '/claims', method:'GET' })
+              .done(list => {
+                $body.empty();
+                list.forEach(c => {
+                  const tr = $('<tr/>');
+                  tr.append(`<td>${c.claimId}</td>`);
+                  tr.append(`<td>${c.policy?.policyType || c.policyId}</td>`);
+                  tr.append(`<td>${Number(c.claimAmount).toLocaleString()}</td>`);
+                  tr.append(`<td>${c.claimStatus}</td>`);
+                  tr.append(`<td>${(c.submissionDate||'').substring(0,10)}</td>`);
+                  tr.append(`<td>${(c.settlementDate||'').substring(0,10)}</td>`);
+                  tr.append(`<td>
+                    <button class="btn btn-sm btn-outline-success me-1" data-act="approve" data-id="${c.claimId}">Approve</button>
+                    <button class="btn btn-sm btn-outline-danger me-1" data-act="reject" data-id="${c.claimId}">Reject</button>
+                  </td>`);
+                  $body.append(tr);
+                });
+              })
+              .fail(()=> alert('Failed to load claims'));
+          }
+
+          $body.on('click', 'button', function(){
+            const id = $(this).data('id');
+            const act = $(this).data('act');
+            const status = act === 'approve' ? 'APPROVED' : 'REJECTED';
+            authAjax({ url: `${apiBase}/claims/${id}/status?status=${status}`, method:'PUT' })
+              .done(loadClaims)
+              .fail(()=> alert('Failed to update status'));
+          });
+
+          loadClaims();
+        })();
+    </script>
+}
+

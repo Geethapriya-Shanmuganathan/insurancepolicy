@@ -1,5 +1,167 @@
 [
   {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "GetClaims",
+    "RelativePath": "api/Admin/claims",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "SetClaimStatus",
+    "RelativePath": "api/Admin/claims/{id}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "GetPolicies",
+    "RelativePath": "api/Admin/policies",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "CreatePolicy",
+    "RelativePath": "api/Admin/policies",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "p",
+        "Type": "InsurancePolicyMS.Models.Policy",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "UpdatePolicy",
+    "RelativePath": "api/Admin/policies/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "p",
+        "Type": "InsurancePolicyMS.Models.Policy",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "DeletePolicy",
+    "RelativePath": "api/Admin/policies/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "Overview",
+    "RelativePath": "api/Admin/reports/overview",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "GetUserPolicies",
+    "RelativePath": "api/Admin/user/{userId}/policies",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "AssignPolicy",
+    "RelativePath": "api/Admin/user/{userId}/policies/{policyId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "policyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.AdminController",
+    "Method": "RemoveUserPolicy",
+    "RelativePath": "api/Admin/user/{userId}/policies/{policyId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "policyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "InsurancePolicyMS.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/Auth/login",
@@ -302,6 +464,37 @@
         "Name": "registrationDto",
         "Type": "InsurancePolicyMS.Models.UserRegistrationDto",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.UserProfileController",
+    "Method": "Index",
+    "RelativePath": "Profile",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InsurancePolicyMS.Controllers.UserProfileController",
+    "Method": "ChangePassword",
+    "RelativePath": "Profile",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "currentPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "newPassword",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsurancePolicyMS.Migrations
 {
     [DbContext(typeof(InsuranceDbContext))]
-    [Migration("20250818101224_initialmigration")]
-    partial class initialmigration
+    [Migration("20250819102613_migrationsadded")]
+    partial class migrationsadded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

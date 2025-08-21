@@ -1,0 +1,36 @@
+﻿@model IEnumerable<InsurancePolicyMS.Models.UserPolicy>
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Submit Claim";
+}
+
+<div class="container py-4">
+    <h4 class="mb-3">Submit a Claim</h4>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You don't own any policies yet. <a asp-controller="Store" asp-action="Explore">Explore and buy a policy</a>.</div>
+    }
+    else
+    {
+        <form method="post" asp-controller="UserClaims" asp-action="Submit" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-md-6">
+                <label class="form-label">Policy</label>
+                <select class="form-select" name="policyId" required>
+                    @foreach (var up in Model)
+                    {
+                        <option value="@up.PolicyId">@up.Policy.PolicyType</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Claim Amount</label>
+                <input type="number" step="0.01" class="form-control" name="claimAmount" required />
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <a class="btn btn-outline-secondary" asp-controller="UserClaims" asp-action="Index">Back</a>
+            </div>
+        </form>
+    }
+</div>

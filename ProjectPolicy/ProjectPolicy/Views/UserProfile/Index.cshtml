@@ -1,0 +1,188 @@
+﻿@model InsurancePolicyMS.Models.UserProfilePage
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Your Profile";
+}
+
+<div class="container py-4">
+    <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="card-title mb-1">Account</h5>
+                            <div class="text-muted small">Manage your details</div>
+                        </div>
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border" style="width:40px;height:40px;">
+                            <i class="bi bi-person" style="font-size: 1.25rem;"></i>
+                        </span>
+                    </div>
+                    <hr />
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Username</dt>
+                        <dd class="col-sm-8">@Model.Username</dd>
+
+                        <dt class="col-sm-4">Role</dt>
+                        <dd class="col-sm-8">@Model.Role</dd>
+                    </dl>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pwdModal">Change Password</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="/Home/Index">Explore Policies</a>
+                        <button id="btnLogoutInline" class="btn btn-outline-danger btn-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">Your Policies</h5>
+                    <div class="text-muted small mb-2">Policies purchased by you</div>
+                    @if (Model.PurchasedPolicies.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">You have not purchased any policies yet.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Coverage</th>
+                                        <th>Premium</th>
+                                        <th>Validity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in Model.PurchasedPolicies)
+                                    {
+                                        <tr>
+                                            <td>@p.PolicyType</td>
+                                            <td>@p.CoverageAmount.ToString("N0")</td>
+                                            <td>@p.PremiumAmount.ToString("N0")</td>
+                                            <td>@p.ValidityStartDate.ToString("yyyy-MM-dd") - @p.ValidityEndDate.ToString("yyyy-MM-dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-1">Your Claims</h5>
+            <div class="text-muted small mb-2">Claims associated with your policies</div>
+            @if (Model.Claims.Count == 0)
+            {
+                <div class="alert alert-secondary mb-0">No claims found.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Claim Id</th>
+                                <th>Policy</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Settlement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.Claims)
+                            {
+                                <tr>
+                                    <td>@c.ClaimId</td>
+                                    <td>@(c.Policy?.PolicyType ?? c.PolicyId.ToString())</td>
+                                    <td>@c.ClaimAmount.ToString("N0")</td>
+                                    <td>@c.ClaimStatus</td>
+                                    <td>@c.SubmissionDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(c.SettlementDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="pwdModal" tabindex="-1" aria-labelledby="pwdModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="pwdForm" method="post" action="/Profile/ChangePassword">
+            <div class="modal-header">
+                <h5 id="pwdModalLabel" class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" name="currentPassword" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">New Password</label>
+                    <input type="password" name="newPassword" class="form-control" required />
+                </div>
+                <div id="pwdMsg" class="text-danger small"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+          // Submit change password via AJAX
+          $('#pwdForm').on('submit', function(e){
+            e.preventDefault();
+            var $f = $(this);
+            var data = $f.serialize();
+            $.ajax({
+              url: $f.attr('action'),
+              method: 'POST',
+              data: data,
+              success: function(){
+                $('#pwdMsg').removeClass('text-danger').addClass('text-success').text('Password updated successfully.');
+                setTimeout(function(){ $('#pwdModal').modal('hide'); }, 800);
+              },
+              error: function(xhr){
+                var msg = 'Failed to update password.';
+                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                $('#pwdMsg').removeClass('text-success').addClass('text-danger').text(msg);
+              }
+            });
+          });
+
+          // Inline logout button (uses same logic as layout)
+          $('#btnLogoutInline').on('click', function(){
+            // Open the existing logout confirmation modal if present, else perform direct logout
+            var modalEl = document.getElementById('logoutModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+              var m = bootstrap.Modal.getOrCreateInstance(modalEl);
+              m.show();
+            } else {
+              try { sessionStorage.removeItem('jwt'); } catch(e) {}
+              document.cookie = 'jwt=; Max-Age=0; path=/; SameSite=Lax';
+              document.cookie = 'ipms_username=; Max-Age=0; path=/; SameSite=Lax';
+              window.location.href = '/Home/Index';
+            }
+          });
+        })();
+    </script>
+}

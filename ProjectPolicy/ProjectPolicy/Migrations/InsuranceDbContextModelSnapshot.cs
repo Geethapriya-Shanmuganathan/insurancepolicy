@@ -170,6 +170,32 @@ namespace InsurancePolicyMS.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("InsurancePolicyMS.Models.UserPolicy", b =>
+                {
+                    b.Property<int>("UserPolicyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserPolicyId"));
+
+                    b.Property<int>("PolicyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserPolicyId");
+
+                    b.HasIndex("PolicyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPolicies");
+                });
+
             modelBuilder.Entity("InsurancePolicyMS.Models.Claim", b =>
                 {
                     b.HasOne("InsurancePolicyMS.Models.Policy", "Policy")
@@ -198,6 +224,25 @@ namespace InsurancePolicyMS.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("InsurancePolicyMS.Models.UserPolicy", b =>
+                {
+                    b.HasOne("InsurancePolicyMS.Models.Policy", "Policy")
+                        .WithMany()
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InsurancePolicyMS.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Policy");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InsurancePolicyMS.Models.Customer", b =>

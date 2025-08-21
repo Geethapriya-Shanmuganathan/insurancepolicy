@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Admin - Reports";
+}
+<div class="container py-4">
+    <h4 class="mb-3">Overview</h4>
+    <div class="row g-3 mb-4" id="cards">
+        <div class="col-md-4">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <div class="card-title fw-semibold">Total Policies</div>
+                    <div id="totalPolicies" class="display-6">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <div class="card-title fw-semibold">Total Users</div>
+                    <div id="totalUsers" class="display-6">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <div class="card-title fw-semibold">Claims by Status</div>
+                    <ul id="claimsByStatus" class="mb-0"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+          const token = sessionStorage.getItem('jwt');
+          function authAjax(opts){
+            opts = opts || {};
+            opts.headers = opts.headers || {};
+            if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+            return $.ajax(opts);
+          }
+          authAjax({ url:'/api/Admin/reports/overview', method:'GET' })
+            .done(data => {
+              $('#totalPolicies').text(data.totalPolicies);
+              $('#totalUsers').text(data.totalUsers);
+              const $ul = $('#claimsByStatus').empty();
+              (data.claimsByStatus || []).forEach(x => {
+                $ul.append(`<li>${x.status}: ${x.count}</li>`);
+              });
+            })
+            .fail(()=> alert('Failed to load report'));
+        })();
+    </script>
+}
